@@ -23,8 +23,12 @@ class AgendasController < ApplicationController
   end
 
   def destroy # AgendasControllerのdestroyアクションを追加(issue #4)
-    @agenda.destroy
-    redirect_to dashboard_url, notice: I18n.t('views.messages.delete_agenda')
+    if @agenda.team.owner == current_user || @agenda.user == current_user
+      @agenda.destroy
+      redirect_to dashboard_url, notice: I18n.t('views.messages.delete_agenda')
+    else
+      redirect_to dashboard_url, notice: I18n.t('views.messages.cannot_delete_only_a_owner')
+    end
   end
 
   private
