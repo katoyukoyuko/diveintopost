@@ -26,6 +26,8 @@ class AgendasController < ApplicationController
     # Agendaを削除できるのは、そのAgendaの作者もしくはそのAgendaに紐づいているTeamの作者（オーナー）のみを追加(issue #4)
     if @agenda.team.owner == current_user || @agenda.user == current_user
       @agenda.destroy
+      # Agendaが削除されると、そのAgendaに紐づいているTeamに所属しているユーザー全員に通知メールが飛ぶ(issue #4)
+      AgendaMailer.agenda_mail(@agenda).deliver
       redirect_to dashboard_url, notice: I18n.t('views.messages.delete_agenda')
     else
       redirect_to dashboard_url, notice: I18n.t('views.messages.cannot_delete_only_a_owner')
