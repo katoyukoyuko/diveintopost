@@ -1,6 +1,6 @@
 class TeamsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_team, only: %i[show edit update destroy]
+  before_action :set_team, only: %i[show edit update destroy transfer_of_owner]
 
   def index
     @teams = Team.all
@@ -45,6 +45,16 @@ class TeamsController < ApplicationController
 
   def dashboard
     @team = current_user.keep_team_id ? Team.find(current_user.keep_team_id) : current_user.teams.first
+  end
+
+  # アクションはTeamコントローラに任意のものを追加する(issue #5)
+  def transfer_of_owner
+    binding.irb
+    assign_id = params[:assign_id]
+    transfer_user_id = Assign.find(assign_id).user_id
+    @team.update(owner_id: transfer_user_id)
+    TeamMailer.team_mail(@team).deliver  # メーラー追加
+    redirect_to team_url(@team), notice: I18n.t('views.messages.transfer_of_owner')
   end
 
   private
