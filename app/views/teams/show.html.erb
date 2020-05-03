@@ -42,6 +42,12 @@
                       <td><%= image_tag 'default.jpg', size: '40x40' %></td>
                       <td><%= assign.user.email %></td>
                       <td><%= link_to I18n.t('views.button.delete'), team_assign_path(@team, assign), method: :delete, class: 'btn btn-sm btn-danger' %></td>
+                      <%# そのTeamのリーダー（オーナー）が、Teamのshowページを開くと、各チームメンバーの「削除」ボタンの右隣に「権限移動」のボタンが出現する(issue #5) %>
+                      <td>
+                        <% if assign.user_id != @team.owner_id %>
+                          <%= link_to I18n.t('views.button.transfer'), transfer_of_owner_team_path(@team, assign_id: assign.id), method: :patch, class: 'btn btn-sm btn-secondary' %>
+                        <% end %>
+                      </td>
                     </tr>
                   <% end %>
                 </tbody>
