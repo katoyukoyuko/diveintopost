@@ -15,7 +15,12 @@ class TeamsController < ApplicationController
     @team = Team.new
   end
 
-  def edit; end
+  def edit
+    # TeamのeditはTeamのリーダー（オーナー）のみができるようにすること (issue #6)
+    if @team.owner != current_user
+      redirect_to team_url(@team), notice: I18n.t('views.messages.failed_to_edit_team')
+    end
+  end
 
   def create
     @team = Team.new(team_params)
